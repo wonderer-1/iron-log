@@ -90,6 +90,9 @@ nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* sport */
 .sport .exrow{align-items:flex-start}
+.lcol{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px}
+.rest{border:0;background:var(--accent-soft);color:var(--accent);border-radius:10px;width:72px;padding:6px 0;font:600 14px var(--body);font-variant-numeric:tabular-nums}
+.rest.on{background:var(--accent);color:#fff}
 .last{font-size:13px;color:var(--muted)}
 .ctl{margin-top:8px;display:flex;flex-direction:column;gap:8px}
 .ctl label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
@@ -492,7 +495,7 @@ en:{home:'Home',plan:'Plan',sport:'Sport',profile:'Profile',sample:'Sample data'
  groups:{All:'All',Push:'Push',Pull:'Pull',Legs:'Legs',Core:'Core',Cardio:'Cardio',Machine:'Machines',Custom:'My exercises'},
  setup:"Let's set you up. You can change this later in Profile.",letsgo:"Let's go",needyou:'Enter your name',redo:'Redo setup',g_muscle:'Build muscle',g_strength:'Get stronger',g_lose:'Lose weight',g_fit:'Stay fit',
  seeall:'See all',history:'Streak history',current:'current streak',beststreak:'best streak',trained:'training days',tapday:'Tap a day to see your workout',backhome:'‹ Home',noworkout:'No workout this day',
- repsu:'reps',plate:'plate',perside:'per side',secu:'s',trk:'Tracking',trk_kg:'Weight + reps',trk_bw:'Reps only',trk_km:'Distance (km)',trk_sec:'Time (seconds)',side:'Menu side',left:'Left',right:'Right',
+ repsu:'reps',plate:'plate',perside:'per side',secu:'s',rest:'rest',restdone:'Rest over. Next set!',trk:'Tracking',trk_kg:'Weight + reps',trk_bw:'Reps only',trk_km:'Distance (km)',trk_sec:'Time (seconds)',side:'Menu side',left:'Left',right:'Right',
  newex:'New exercise',newexsub:'Make your own exercise and pick a stickman for it',exname:'Name',exph:'e.g. Cable crossover',group:'Muscle group',moveslike:'Stickman',createadd:'Create and add',cancel:'Cancel',pluscustom:'+ Create custom exercise',needname:'Give your exercise a name',
  labels:{}},
 fr:{home:'Accueil',plan:'Plan',sport:'Sport',profile:'Profil',sample:'Données exemple',streak:'Série de jours',inrow:"jours d'affilée",restok:'Les jours de repos du plan ne cassent pas la série',
@@ -506,7 +509,7 @@ fr:{home:'Accueil',plan:'Plan',sport:'Sport',profile:'Profil',sample:'Données e
  groups:{All:'Tout',Push:'Poussée',Pull:'Tirage',Legs:'Jambes',Core:'Abdos',Cardio:'Cardio',Machine:'Machines',Custom:'Mes exercices'},
  setup:'Configurons ton profil. Tu pourras le modifier plus tard dans Profil.',letsgo:"C'est parti",needyou:'Entre ton prénom',redo:'Refaire la configuration',g_muscle:'Prendre du muscle',g_strength:'Devenir plus fort',g_lose:'Perdre du poids',g_fit:'Rester en forme',
  seeall:'Tout voir',history:'Historique',current:'série actuelle',beststreak:'meilleure série',trained:"jours d'entraînement",tapday:'Touche un jour pour voir ta séance',backhome:'‹ Accueil',noworkout:'Pas de séance ce jour-là',
- repsu:'rép.',plate:'plaque',perside:'par côté',secu:'s',trk:'Suivi',trk_kg:'Poids + répétitions',trk_bw:'Répétitions seulement',trk_km:'Distance (km)',trk_sec:'Temps (secondes)',side:'Côté du menu',left:'Gauche',right:'Droite',
+ repsu:'rép.',plate:'plaque',perside:'par côté',secu:'s',rest:'repos',restdone:'Repos terminé. Série suivante !',trk:'Suivi',trk_kg:'Poids + répétitions',trk_bw:'Répétitions seulement',trk_km:'Distance (km)',trk_sec:'Temps (secondes)',side:'Côté du menu',left:'Gauche',right:'Droite',
  newex:'Nouvel exercice',newexsub:'Crée ton propre exercice et choisis son bonhomme',exname:'Nom',exph:'ex. Poulie vis-à-vis',group:'Groupe musculaire',moveslike:'Bonhomme',createadd:'Créer et ajouter',cancel:'Annuler',pluscustom:'+ Créer un exercice perso',needname:'Donne un nom à ton exercice',
  labels:{Push:'Poussée',Pull:'Tirage',Legs:'Jambes',Rest:'Repos',Cardio:'Cardio',Workout:'Séance'}}};
 const EXFR={squat:'Squat barre',bench:'Développé couché',dead:'Soulevé de terre',ohp:'Développé militaire',pushup:'Pompes',pullup:'Tractions',row:'Rowing barre',walk:'Marche',cycle:'Vélo',rower:'Rameur',swim:'Natation',boxing:'Shadow boxing',buttkick:'Talons-fesses',wallsit:'Chaise contre le mur',goodmorning:'Good morning',legpress:'Presse à cuisses',sumo:'Squat sumo',pistol:'Pistol squat',farmer:'Marche du fermier',arnold:'Développé Arnold',pushdown:'Extension triceps poulie',benchdip:'Dips sur banc',facepull:'Face pull',invrow:'Rowing inversé',revfly:'Oiseau',sideplank:'Gainage latéral',hollow:'Hollow hold',superman:'Superman',lyinglegraise:'Relevé de jambes allongé',bicycle:'Crunch vélo',abwheel:'Roue abdominale',diamond:'Pompes diamant',closegrip:'Développé couché prise serrée',dbrow:'Rowing haltère',hang:'Suspension',
@@ -552,12 +555,13 @@ const BAR=id=>M(id)==='kg'&&/(^| )bar( |$)/.test(EX[id].prop||'');
 const plates=w=>{let r=(w-20)/2;if(r<=0)return '';const o=[];for(const p of [25,20,15,10,5,2.5,1.25])while(r>=p-1e-9){o.push(p);r-=p}return `${t('perside')}: ${o.join(' + ')}`};
 const fmt=(id,s)=>({kg:s.p?`${t('plate')} ${s.w} × ${s.r}`:`${s.w} kg × ${s.r}`,bw:`${s.r} ${t('repsu')}`,sec:`${s.r} ${t('secu')}`,km:`${s.w} km · ${s.r} min`})[M(id)];
 const tgt=it=>({kg:`${it.sets} × ${it.reps}`,bw:`${it.sets} × ${it.reps}`,sec:`${it.sets} × ${it.reps} s`,km:`${it.reps} km`})[M(it.ex)];
+const RST=it=>it.rest??90,mmss=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
 const newItem=ex=>({km:{ex,sets:1,reps:5},sec:{ex,sets:3,reps:60}})[M(ex)]||{ex,sets:3,reps:10};
 const stepper=(id,v,unit,step)=>`<button data-st="${id}|-${step}">−</button><span class="num" id="${id}">${v}</span><span class="last">${unit}</span><button data-st="${id}|${step}">+</button>`;
 const DAYS_=()=>t('days');
 
 // ---------- pages ----------
-let page='home',history=false,histDay=null,planDay=dow(),filter='All',adding=false,creating=false,sportDay=dow(),startT=null;
+let page='home',history=false,histDay=null,planDay=dow(),filter='All',adding=false,creating=false,sportDay=dow(),startT=null,restI=null,restEnd=0;
 // full streak history: every month since the first workout, tap a day for details
 function bestStreak(){const keys=Object.keys(S.days).sort();if(!keys.length)return 0;
   let n=0,best=0;const d=new Date(keys[0]+'T12:00'),end=new Date();
@@ -629,7 +633,8 @@ plan(){
   return `<h1>${t('plan')}</h1><p class="sub">${t('progday')}</p>${days}
   <div class="row" style="margin-bottom:10px"><input id="lbl" value="${esc(lab(d.label))}" style="font:600 18px var(--body);color:var(--fg);background:none;border:0;border-bottom:1px dashed var(--line);width:60%"><span class="last">${d.items.length} ${t('exercises')}</span></div>
   <div class="stack">${d.items.map((it,i)=>`<div class="card exrow"><span data-c="${it.ex}" data-s="64"></span><div class="info"><b>${exn(it.ex)}</b>
-   <span>${M(it.ex)==='km'?'':`<button class="x" data-ss="${i}|-1" style="font-size:16px">−</button>${it.sets} ${t('sets')}<button class="x" data-ss="${i}|1" style="font-size:16px">+</button> × `}<button class="x" data-rr="${i}|-${M(it.ex)==='sec'?10:1}" style="font-size:16px">−</button>${it.reps}${M(it.ex)==='km'?' km':M(it.ex)==='sec'?' s':''}<button class="x" data-rr="${i}|${M(it.ex)==='sec'?10:1}" style="font-size:16px">+</button></span></div>
+   <span>${M(it.ex)==='km'?'':`<button class="x" data-ss="${i}|-1" style="font-size:16px">−</button>${it.sets} ${t('sets')}<button class="x" data-ss="${i}|1" style="font-size:16px">+</button> × `}<button class="x" data-rr="${i}|-${M(it.ex)==='sec'?10:1}" style="font-size:16px">−</button>${it.reps}${M(it.ex)==='km'?' km':M(it.ex)==='sec'?' s':''}<button class="x" data-rr="${i}|${M(it.ex)==='sec'?10:1}" style="font-size:16px">+</button></span>
+   <span>${t('rest')} <button class="x" data-rt="${i}|-15" style="font-size:16px">−</button>${mmss(RST(it))}<button class="x" data-rt="${i}|15" style="font-size:16px">+</button></span></div>
    <button class="x" data-del="${i}" aria-label="Remove">×</button></div>`).join('')||`<div class="card sub" style="margin:0">${t('restplan')}</div>`}
   <button class="btn" data-adding>${t('plusadd')}</button></div>`},
 sport(){
@@ -646,7 +651,8 @@ sport(){
    const main={kg:pin?stepper('w'+i,cur.p?cur.w:1,unit,1):stepper('w'+i,cur.p?0:cur.w,unit,2.5),km:stepper('w'+i,cur.w,'km',0.5),sec:stepper('w'+i,cur.r,t('secu'),10),bw:'<span style="flex:1"></span>'}[m];
    ctl+=`<div class="kg">${main}<button class="save" data-save="${i}" aria-label="${t('save')}">✓</button></div>`;
    if(BAR(it.ex))ctl+=`<div class="last" id="pl${i}">${plates(cur.w)}</div>`;
-   return `<div class="card exrow"><span data-c="${it.ex}" data-s="72"></span><div class="info">
+   const on=restI===i&&restEnd>Date.now();
+   return `<div class="card exrow"><div class="lcol"><span data-c="${it.ex}" data-s="72"></span><button class="rest${on?' on':''}" data-rest="${i}" id="rt${i}">⏱ ${mmss(on?Math.ceil((restEnd-Date.now())/1000):RST(it))}</button></div><div class="info">
     <div class="row"><b>${exn(it.ex)}</b><span class="last">${m==='km'?'':`${done.length}/${it.sets} ${t('sets')}`}</span></div>
     <div class="last">${t('lasttime')}: ${last?fmt(it.ex,last):'—'}</div>
     <div class="ctl">${ctl}</div>
@@ -670,7 +676,10 @@ function render(){
   document.querySelectorAll('[data-c]').forEach(el=>el.replaceWith(stick(el.dataset.c,+el.dataset.s)));
   document.querySelectorAll('#tabs button').forEach(b=>{b.classList.toggle('on',b.dataset.p===page);b.lastChild.textContent=t(b.dataset.p)});
 }
-setInterval(()=>{const c=$('#clock');if(c&&startT){const s=Math.floor((Date.now()-startT)/1000);c.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}},1000);
+setInterval(()=>{const c=$('#clock');if(c&&startT){const s=Math.floor((Date.now()-startT)/1000);c.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+  if(restI!==null){const left=Math.ceil((restEnd-Date.now())/1000),b=$('#rt'+restI),it=S.plan[sportDay].items[restI];
+    if(left<=0){if(b){b.classList.remove('on');b.textContent='⏱ '+mmss(RST(it||{}))}restI=null;navigator.vibrate&&navigator.vibrate([300,150,300]);toast(t('restdone'))}
+    else if(b)b.textContent='⏱ '+mmss(left)}},1000);
 
 // ---------- events ----------
 document.addEventListener('click',e=>{
@@ -698,7 +707,9 @@ document.addEventListener('click',e=>{
   if(D.del){S.plan[planDay].items.splice(+D.del,1);save();render()}
   if(D.ss){const [i,v]=D.ss.split('|');const it=S.plan[planDay].items[i];it.sets=Math.max(1,it.sets+ +v);save();render()}
   if(D.rr){const [i,v]=D.rr.split('|');const it=S.plan[planDay].items[i];it.reps=Math.max(1,it.reps+ +v);save();render()}
-  if(D.sd){sportDay=+D.sd;render()}
+  if(D.rt){const [i,v]=D.rt.split('|');const it=S.plan[planDay].items[i];it.rest=Math.max(0,Math.min(600,RST(it)+ +v));save();render()}
+  if(D.sd){sportDay=+D.sd;restI=null;render()}
+  if(D.rest){const i=+D.rest;if(restI===i){restI=null}else{restI=i;restEnd=Date.now()+RST(S.plan[sportDay].items[i])*1000}render()}
   if(D.st){const [id,v]=D.st.split('|');const el=$('#'+id);el.textContent=Math.round(Math.max(0,+el.textContent+ +v)*10)/10;
     const pl=$('#pl'+id.slice(1));if(id[0]==='w'&&pl)pl.textContent=plates(+el.textContent)}
   if(D.pin){S.pin[D.pin]=!PIN(D.pin);save();render()}
@@ -708,7 +719,7 @@ document.addEventListener('click',e=>{
     const val=s=>m==='kg'?s.w*1000+s.r:m==='km'?s.w:s.r;
     const p=PIN(it.ex)?1:0;
     const prev=Object.values(S.days).flat().filter(s=>s.ex===it.ex&&!s.p===!p);const pr=val({w,r})>0&&(m!=='kg'||w>0)&&prev.every(s=>val(s)<val({w,r}));
-    const set=p?{w,r,p}:{w,r};(S.days[today()]=S.days[today()]||[]).push({ex:it.ex,...set,pr});S.last[it.ex]=set;save();render();toast(pr?t('pr')+' '+fmt(it.ex,set):t('saved'))}
+    const set=p?{w,r,p}:{w,r};(S.days[today()]=S.days[today()]||[]).push({ex:it.ex,...set,pr});S.last[it.ex]=set;if(RST(it)){restI=+i;restEnd=Date.now()+RST(it)*1000}save();render();toast(pr?t('pr')+' '+fmt(it.ex,set):t('saved'))}
   if('reset' in D){if(b.dataset.armed){S={v:3,lang:S.lang,side:S.side,custom:{},profile:{name:'',bw:'',height:'',goal:''},plan:DAYS.map(()=>({label:'Rest',items:[]})),last:{},days:{}};save();render();toast(t('cleared'))}
     else{b.dataset.armed=1;b.textContent=t('confirm');b.style.background='#D93636';b.style.color='#fff'}}
 });
