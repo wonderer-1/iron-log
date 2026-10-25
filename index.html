@@ -237,7 +237,169 @@ const MODES={
   km:'run walk cycle rower swim',
   sec:'plank wallsit sideplank hang hollow rope boxing'};
 for(const m in MODES)for(const id of MODES[m].split(' '))EX[id].m=m;
-const GROUPS=['All','Push','Pull','Legs','Core','Cardio','Custom'];
+// ---------- more exercises: machines (mc), cables, free weights, bodyweight ----------
+const SIT=o=>Object.assign({h:[46,24],n:[46,32],hp:[44,62],k:[62,62],f:[64,92],e:[48,46],w:[54,58]},o);
+const FS=o=>Object.assign({h:[50,22],n:[50,30],hp:[50,60],k:[40,64],f:[38,92],k2:[60,64],f2:[62,92],e:[40,44],w:[38,58],e2:[60,44],w2:[62,58]},o);
+const PR=o=>Object.assign({h:[18,58],n:[26,61],hp:[52,62],k:[70,62],f:[86,62],e:[24,70],w:[22,78]},o);
+const BO=o=>Object.assign({h:[69,36],n:[62,40],hp:[38,56],k:[46,72],f:[44,92],e:[60,56],w:[58,70]},o);
+const LY=o=>Object.assign({h:[16,86],n:[24,88],hp:[50,90],k:[68,90],f:[84,90],e:[34,90],w:[44,90]},o);
+const ALL4=o=>Object.assign({h:[78,52],n:[70,56],hp:[40,58],k:[40,90],f:[22,90],k2:[40,90],f2:[22,90],e:[70,74],w:[70,90]},o);
+const v=(base,o)=>({...EX[base],...o});
+const kb={A:P({k2:[48,72],f2:[46,92],e:[56,36],w:[64,44]}),B:P({k2:[34,62],f2:[18,70],e:[56,36],w:[64,44]})};
+const upright={A:P({e:[50,37],w:[52,52]}),B:P({e:[64,26],w:[54,32]})};
+const lat={A:P({}),B:{h:[40,30],n:[40,38],hp:[42,66],k:[28,76],f:[24,92],k2:[64,80],f2:[76,92],e:[40,52],w:[42,64]}};
+const armSit={A:SIT({e:[60,44],w:[76,48]}),B:SIT({e:[60,44],w:[58,28]})};
+Object.assign(EX,{
+  // machines
+  legext:{n:'Leg extension',g:'Legs',prop:'seat stack',mc:1,A:SIT({e:[48,48],w:[50,62]}),B:SIT({f:[90,60],e:[48,48],w:[50,62]})},
+  legcurl:{n:'Seated leg curl',g:'Legs',prop:'seat stack',mc:1,A:SIT({f:[90,60],w:[50,62]}),B:SIT({f:[56,90],w:[50,62]})},
+  lyingcurl:{n:'Lying leg curl',g:'Legs',prop:'bench stack',mc:1,A:PR({}),B:PR({f:[76,46]})},
+  abductor:{n:'Hip abduction machine',g:'Legs',prop:'seat stack',mc:1,A:FS({}),B:FS({k:[30,62],f:[24,92],k2:[70,62],f2:[76,92]})},
+  adductor:{n:'Hip adduction machine',g:'Legs',prop:'seat stack',mc:1,A:FS({k:[30,62],f:[24,92],k2:[70,62],f2:[76,92]}),B:FS({})},
+  seatedcalf:{n:'Seated calf raise',g:'Legs',prop:'seat stack',mc:1,A:SIT({e:[54,46],w:[60,58]}),B:SIT({k:[62,56],f:[64,86],e:[54,40],w:[60,52]})},
+  hacksquat:v('squat',{n:'Hack squat',prop:'stack',mc:1}),
+  smithsquat:v('squat',{n:'Smith machine squat',prop:'bar smith',mc:1}),
+  smithbench:v('bench',{n:'Smith machine bench press',prop:'bar bench smith',mc:1}),
+  smithpress:v('ohp',{n:'Smith machine shoulder press',prop:'bar smith',mc:1}),
+  calfpress:v('legpress',{n:'Leg press calf raise',mc:1,A:EX.legpress.B,B:{...EX.legpress.B,f:[78,40]}}),
+  glutemachine:{n:'Glute kickback machine',g:'Legs',prop:'stack',mc:1,...kb},
+  hipthrustm:v('hipthrust',{n:'Hip thrust machine',prop:'box stack',mc:1}),
+  chestpress:{n:'Chest press machine',g:'Push',prop:'seat stack',mc:1,A:SIT({e:[36,44],w:[52,40]}),B:SIT({e:[60,36],w:[76,36]})},
+  inclinepressm:{n:'Incline chest press machine',g:'Push',prop:'seat stack',mc:1,A:SIT({e:[36,40],w:[52,32]}),B:SIT({e:[60,26],w:[74,16]})},
+  shoulderpressm:{n:'Shoulder press machine',g:'Push',prop:'seat stack',mc:1,A:FS({e:[34,30],w:[34,18],e2:[66,30],w2:[66,18]}),B:FS({e:[38,14],w:[40,0],e2:[62,14],w2:[60,0]})},
+  lateralm:{n:'Lateral raise machine',g:'Push',prop:'seat stack',mc:1,A:FS({}),B:FS({e:[32,30],w:[20,30],e2:[68,30],w2:[80,30]})},
+  pecdeck:{n:'Pec deck',g:'Push',prop:'seat stack',mc:1,A:FS({e:[30,30],w:[30,18],e2:[70,30],w2:[70,18]}),B:FS({e:[40,30],w:[48,20],e2:[60,30],w2:[52,20]})},
+  revpecdeck:{n:'Reverse pec deck',g:'Pull',prop:'seat stack',mc:1,A:FS({e:[40,30],w:[48,30],e2:[60,30],w2:[52,30]}),B:FS({e:[30,30],w:[18,30],e2:[70,30],w2:[82,30]})},
+  dipmachine:v('dips',{n:'Assisted dip machine',prop:'dipbar stack',mc:1,m:'kg'}),
+  assistpull:v('pullup',{n:'Assisted pull-up machine',prop:'pullbar stack',mc:1,m:'kg'}),
+  machinerow:{n:'Machine row',g:'Pull',prop:'seat stack',mc:1,A:SIT({e:[60,44],w:[74,44]}),B:SIT({e:[32,44],w:[48,46]})},
+  highrowm:{n:'High row machine',g:'Pull',prop:'seat stack',mc:1,A:SIT({e:[60,24],w:[72,14]}),B:SIT({e:[34,40],w:[50,32]})},
+  pullovermachine:{n:'Pullover machine',g:'Pull',prop:'seat stack',mc:1,A:SIT({e:[50,14],w:[60,4]}),B:SIT({e:[56,46],w:[64,58]})},
+  tricepmachine:{n:'Triceps extension machine',g:'Push',prop:'seat stack',mc:1,A:SIT({e:[60,44],w:[58,30]}),B:SIT({e:[60,44],w:[76,46]})},
+  bicepmachine:{n:'Biceps curl machine',g:'Pull',prop:'seat stack',mc:1,...armSit},
+  abmachine:{n:'Ab crunch machine',g:'Core',prop:'seat stack',mc:1,A:SIT({e:[52,28],w:[54,20]}),B:SIT({h:[58,36],n:[54,42],e:[60,40],w:[64,32]})},
+  torsorot:{n:'Torso rotation machine',g:'Core',prop:'seat stack',mc:1,A:FS({e:[38,38],w:[50,40],e2:[62,38],w2:[50,40]}),B:FS({h:[48,22],e:[30,36],w:[40,42],e2:[54,38],w2:[40,42]})},
+  backextm:{n:'Back extension machine',g:'Pull',prop:'seat stack',mc:1,A:SIT({h:[62,34],n:[58,40],e:[62,52],w:[60,62]}),B:SIT({h:[36,24],n:[38,32],e:[44,46],w:[50,58]})},
+  // cables
+  cablecross:{n:'Cable crossover',g:'Push',prop:'cable',mc:1,cp:[0,0],A:P({e:[34,30],w:[22,24],e2:[66,30],w2:[78,24]}),B:P({e:[40,40],w:[50,52],e2:[60,40],w2:[50,52]})},
+  cablecurl:v('curl',{n:'Cable curl',prop:'cable',cp:[58,92],mc:1}),
+  cablelateral:v('lateral',{n:'Cable lateral raise',prop:'cable',cp:[62,92],mc:1}),
+  cableoh:v('ohtricep',{n:'Cable overhead triceps extension',prop:'cable',cp:[36,92],mc:1}),
+  straightpd:{n:'Straight-arm pulldown',g:'Pull',prop:'cable',mc:1,cp:[96,-6],A:P({e:[58,22],w:[68,12]}),B:P({e:[52,38],w:[54,54]})},
+  cablecrunch:{n:'Cable crunch',g:'Core',prop:'cable',mc:1,cp:[60,-6],A:{h:[58,38],n:[54,46],hp:[42,66],k:[50,90],f:[26,92],e:[60,40],w:[58,32]},B:{h:[66,62],n:[60,64],hp:[42,66],k:[50,90],f:[26,92],e:[66,56],w:[64,50]}},
+  woodchop:{n:'Cable woodchopper',g:'Core',prop:'cable',mc:1,cp:[100,-6],A:P({e:[62,26],w:[72,16]}),B:P({e:[42,50],w:[32,62]})},
+  pallof:{n:'Pallof press',g:'Core',prop:'cable',mc:1,cp:[104,40],A:P({e:[54,40],w:[56,46]}),B:P({e:[62,38],w:[76,38]})},
+  pullthrough:v('rdl',{n:'Cable pull-through',prop:'cable',cp:[4,92],mc:1}),
+  cablekick:{n:'Cable glute kickback',g:'Legs',prop:'cable',cp:[100,30],mc:1,...kb},
+  cablefrontraise:v('frontraise',{n:'Cable front raise',prop:'cable',cp:[40,92],mc:1}),
+  ropehammer:v('hammer',{n:'Rope hammer curl',prop:'cable',cp:[54,92],mc:1}),
+  cableuprow:{n:'Cable upright row',g:'Push',prop:'cable',cp:[52,92],mc:1,...upright},
+  // cardio machines
+  treadmill:v('run',{n:'Treadmill',mc:1}),
+  elliptical:v('walk',{n:'Elliptical',mc:1}),
+  stair:v('highknees',{n:'Stair climber',g:'Cardio',mc:1,m:'sec'}),
+  airbike:v('cycle',{n:'Air bike',mc:1}),
+  skierg:{n:'Ski erg',g:'Cardio',mc:1,m:'km',A:P({e:[56,10],w:[62,0]}),B:{h:[60,30],n:[56,38],hp:[44,62],k:[54,72],f:[50,92],e:[56,56],w:[50,70]}},
+  // push
+  declinebench:v('bench',{n:'Decline bench press'}),
+  inclinedb:v('incline',{n:'Incline dumbbell press',prop:'db'}),
+  inclinefly:v('fly',{n:'Incline dumbbell fly'}),
+  floorpress:v('bench',{n:'Floor press',prop:'bar'}),
+  pushpress:v('ohp',{n:'Push press'}),
+  landmine:v('ohp',{n:'Landmine press'}),
+  zpress:v('ohp',{n:'Z press'}),
+  widepushup:v('pushup',{n:'Wide push-up'}),
+  inclinepushup:v('pushup',{n:'Incline push-up'}),
+  declinepushup:v('pushup',{n:'Decline push-up'}),
+  kneepushup:v('pushup',{n:'Knee push-up'}),
+  archer:v('pushup',{n:'Archer push-up'}),
+  clappushup:v('pushup',{n:'Clap push-up'}),
+  hspu:v('pike',{n:'Handstand push-up'}),
+  ringdips:v('dips',{n:'Ring dips'}),
+  kickback:{n:'Triceps kickback',g:'Push',prop:'db',A:BO({e:[50,50],w:[54,66]}),B:BO({e:[50,50],w:[34,56]})},
+  uprightrow:{n:'Upright row',g:'Push',prop:'bar',...upright},
+  pullover:{n:'Dumbbell pullover',g:'Push',prop:'db bench',A:{...EX.bench.A,e:[14,58],w:[4,52]},B:{...EX.bench.A,e:[30,46],w:[34,34]}},
+  platefront:v('frontraise',{n:'Plate front raise'}),
+  // pull
+  pendlay:v('row',{n:'Pendlay row'}),
+  tbar:v('row',{n:'T-bar row'}),
+  sealrow:v('row',{n:'Seal row'}),
+  renegade:v('plank',{n:'Renegade row',g:'Pull',prop:'db',m:'kg'}),
+  muscleup:v('pullup',{n:'Muscle-up'}),
+  widepull:v('pullup',{n:'Wide-grip pull-up'}),
+  neutralpull:v('pullup',{n:'Neutral-grip pull-up'}),
+  preacher:{n:'Preacher curl',g:'Pull',prop:'db seat',...armSit},
+  concentration:{n:'Concentration curl',g:'Pull',prop:'db seat',...armSit},
+  ezcurl:v('curl',{n:'EZ-bar curl',prop:'bar'}),
+  reversecurl:v('curl',{n:'Reverse curl',prop:'bar'}),
+  zottman:v('hammer',{n:'Zottman curl'}),
+  wristcurl:{n:'Wrist curl',g:'Pull',prop:'db seat',A:SIT({e:[54,58],w:[68,62]}),B:SIT({e:[54,58],w:[68,54]})},
+  rackpull:v('dead',{n:'Rack pull'}),
+  trapbar:v('dead',{n:'Trap bar deadlift'}),
+  sumodead:v('sumo',{n:'Sumo deadlift',g:'Pull',prop:'bar'}),
+  stiffleg:v('rdl',{n:'Stiff-leg deadlift'}),
+  powerclean:{n:'Power clean',g:'Pull',prop:'bar',A:EX.dead.A,B:P({e:[60,30],w:[54,22]})},
+  snatch:{n:'Snatch',g:'Pull',prop:'bar',A:EX.dead.A,B:P({e:[54,10],w:[52,-4]})},
+  highpull:{n:'High pull',g:'Pull',prop:'bar',A:EX.dead.A,B:upright.B},
+  backext:{n:'Back extension',g:'Pull',prop:'box',m:'bw',A:{h:[74,74],n:[68,70],hp:[46,62],k:[30,74],f:[16,88],e:[68,80],w:[70,88]},B:{h:[78,44],n:[70,48],hp:[46,62],k:[30,74],f:[16,88],e:[66,58],w:[66,66]}},
+  // legs
+  boxsquat:v('squat',{n:'Box squat',prop:'bar box'}),
+  pausesquat:v('squat',{n:'Pause squat'}),
+  zercher:v('frontsquat',{n:'Zercher squat'}),
+  ohsquat:{n:'Overhead squat',g:'Legs',prop:'bar',A:P({e:[50,6],w:[50,-4]}),B:{...EX.squat.B,e:[54,22],w:[56,8]}},
+  thruster:{n:'Thruster',g:'Legs',prop:'bar',A:EX.frontsquat.B,B:P({e:[54,12],w:[52,2]})},
+  splitsquat:v('lunge',{n:'Split squat'}),
+  reverselunge:v('lunge',{n:'Reverse lunge'}),
+  walkinglunge:v('lunge',{n:'Walking lunge'}),
+  curtsy:v('lunge',{n:'Curtsy lunge'}),
+  laterallunge:{n:'Lateral lunge',g:'Legs',prop:'db',...lat},
+  cossack:{n:'Cossack squat',g:'Legs',m:'bw',...lat},
+  stepup:{n:'Step-up',g:'Legs',prop:'db box',A:{h:[44,22],n:[44,30],hp:[44,60],k:[30,56],f:[26,66],k2:[50,76],f2:[50,92],e:[44,45],w:[44,60]},B:{h:[30,2],n:[30,10],hp:[30,40],k:[28,54],f:[26,66],k2:[38,54],f2:[36,66],e:[30,25],w:[30,40]}},
+  boxjump:v('jumpsquat',{n:'Box jump',prop:'box'}),
+  singlerdl:{n:'Single-leg RDL',g:'Legs',prop:'db',A:P({}),B:{h:[76,48],n:[68,48],hp:[44,54],k:[46,72],f:[46,92],k2:[22,50],f2:[4,46],e:[68,60],w:[68,72]}},
+  nordic:{n:'Nordic curl',g:'Legs',m:'bw',A:{h:[60,26],n:[58,34],hp:[54,62],k:[46,90],f:[22,90],e:[58,48],w:[60,60]},B:{h:[86,74],n:[80,74],hp:[66,82],k:[46,90],f:[22,90],e:[84,84],w:[90,90]}},
+  singlebridge:v('bridge',{n:'Single-leg glute bridge'}),
+  frogpump:v('bridge',{n:'Frog pump'}),
+  donkeykick:{n:'Donkey kick',g:'Legs',m:'bw',A:ALL4({}),B:ALL4({k2:[22,56],f2:[22,36]})},
+  firehydrant:{n:'Fire hydrant',g:'Legs',m:'bw',A:ALL4({}),B:ALL4({k2:[34,68],f2:[18,74]})},
+  sissy:{n:'Sissy squat',g:'Legs',m:'bw',A:P({}),B:{h:[38,34],n:[40,42],hp:[46,68],k:[62,76],f:[56,92],e:[48,50],w:[54,50]}},
+  jumplunge:v('lunge',{n:'Jump lunge',m:'bw'}),
+  skater:{n:'Skater jump',g:'Legs',m:'bw',...lat},
+  kbsnatch:{n:'Kettlebell snatch',g:'Legs',prop:'db',A:EX.swing.A,B:P({e:[52,12],w:[54,-2]})},
+  wallball:{n:'Wall ball',g:'Legs',prop:'db',A:EX.goblet.B,B:P({e:[54,10],w:[52,0]})},
+  sledpush:{n:'Sled push',g:'Legs',A:{h:[74,40],n:[68,44],hp:[44,60],k:[56,72],f:[50,92],k2:[38,78],f2:[26,92],e:[76,52],w:[84,50]},B:{h:[74,40],n:[68,44],hp:[44,60],k:[38,78],f:[26,92],k2:[56,72],f2:[50,92],e:[76,52],w:[84,50]}},
+  // core
+  vup:{n:'V-up',g:'Core',m:'bw',A:LY({e:[10,84],w:[2,82]}),B:LY({h:[38,64],n:[40,72],k:[60,70],f:[68,52],e:[50,60],w:[62,52]})},
+  jackknife:{n:'Jackknife',g:'Core',m:'bw',A:LY({e:[10,84],w:[2,82]}),B:LY({h:[38,64],n:[40,72],k:[60,70],f:[68,52],e:[50,60],w:[62,52]})},
+  toetouch:{n:'Toe touch crunch',g:'Core',m:'bw',A:LY({k:[52,72],f:[54,54],e:[30,78],w:[38,70]}),B:LY({h:[30,76],n:[34,82],k:[52,72],f:[54,54],e:[42,66],w:[52,56]})},
+  flutter:{n:'Flutter kicks',g:'Core',m:'bw',A:LY({k:[66,84],f:[82,80],k2:[66,90],f2:[84,88]}),B:LY({k:[66,90],f:[84,88],k2:[66,84],f2:[82,80]})},
+  deadbug:{n:'Dead bug',g:'Core',m:'bw',A:LY({k:[54,72],f:[68,72],k2:[54,72],f2:[68,72],e:[26,72],w:[28,58],e2:[26,72],w2:[28,58]}),B:LY({k:[66,86],f:[82,86],k2:[54,72],f2:[68,72],e:[14,82],w:[4,80],e2:[26,72],w2:[28,58]})},
+  birddog:{n:'Bird dog',g:'Core',m:'bw',A:ALL4({}),B:ALL4({e:[80,56],w:[92,56],k2:[24,58],f2:[6,56]})},
+  plankjack:v('plank',{n:'Plank jacks',m:'bw'}),
+  shouldertap:{n:'Plank shoulder taps',g:'Core',m:'bw',A:EX.pushup.A,B:{...EX.pushup.A,e:[66,72],w:[62,76]}},
+  kneeraise:v('legraise',{n:'Hanging knee raise',B:{...EX.legraise.B,k:[64,62],f:[62,80]}}),
+  windshield:v('legraise',{n:'Windshield wipers'}),
+  dragonflag:v('lyinglegraise',{n:'Dragon flag',prop:'bench'}),
+  reversecrunch:v('lyinglegraise',{n:'Reverse crunch',B:LY({k:[44,66],f:[58,60]})}),
+  heeltouch:v('crunch',{n:'Heel touch'}),
+  obliquecrunch:v('crunch',{n:'Oblique crunch'}),
+  declinesitup:v('situp',{n:'Decline sit-up'}),
+  hollowrock:v('hollow',{n:'Hollow rock',m:'bw'}),
+  lsit:{n:'L-sit',g:'Core',prop:'dipbar',m:'sec',A:{h:[44,24],n:[44,32],hp:[44,62],k:[62,62],f:[80,62],e:[40,44],w:[40,50]},B:{h:[44,23],n:[44,31],hp:[44,61],k:[62,60],f:[80,58],e:[40,44],w:[40,50]}},
+  suitcase:v('farmer',{n:'Suitcase carry',g:'Core'}),
+  sidebend:{n:'Dumbbell side bend',g:'Core',prop:'db',A:P({}),B:P({h:[42,16],n:[46,23],e:[40,38],w:[36,52]})},
+  // cardio
+  sprint:v('run',{n:'Sprint'}),
+  hike:v('walk',{n:'Hiking'}),
+  battleropes:{n:'Battle ropes',g:'Cardio',m:'sec',A:{h:[54,30],n:[52,38],hp:[40,62],k:[56,72],f:[50,92],e:[62,50],w:[74,44]},B:{h:[54,30],n:[52,38],hp:[40,62],k:[56,72],f:[50,92],e:[62,56],w:[74,64]}},
+  bearcrawl:{n:'Bear crawl',g:'Cardio',m:'sec',A:ALL4({k:[46,76],f:[30,90]}),B:ALL4({k2:[46,76],f2:[30,90],w:[76,90]})},
+  inchworm:{n:'Inchworm',g:'Cardio',m:'bw',A:{h:[56,74],n:[52,64],hp:[46,44],k:[46,68],f:[46,92],e:[56,80],w:[58,92]},B:EX.pushup.A},
+  tuckjump:v('jumpsquat',{n:'Tuck jump',B:{...EX.jumpsquat.B,k:[62,48],f:[50,66]}}),
+  shuffle:v('jack',{n:'Lateral shuffle',m:'sec'}),
+  skating:v('run',{n:'Inline skating'}),
+});
+for(const id of 'pulldown cablerow legpress pushdown facepull rower'.split(' '))EX[id].mc=1;
+const GROUPS=['All','Push','Pull','Legs','Core','Cardio','Machine','Custom'];
 
 // ---------- stickman renderer: one loop draws every canvas on screen ----------
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -265,6 +427,9 @@ function draw(c,t){
   if(pr.includes('box')){ctx.fillStyle=mu;ctx.fillRect(X([8,66]),Y([8,66]),26*k,26*k)}
   if(pr.includes('seat')){ctx.fillStyle=mu;ctx.fillRect(X([34,64]),Y([34,64]),26*k,4*k);ctx.fillRect(X([45,64]),Y([45,64]),3*k,28*k)}
   if(pr.includes('dipbar'))line([[38,50],[66,50]],mu,3);
+  if(pr.includes('smith')){line([[18,-4],[18,92]],mu,2);line([[84,-4],[84,92]],mu,2)}
+  if(pr.includes('stack')){line([[90,0],[90,92]],mu,2);line([[104,0],[104,92]],mu,2);line([[90,0],[104,0]],mu,2);
+    ctx.fillStyle=mu;for(let i=0;i<5;i++)ctx.fillRect(X([92,0]),Y([0,70+i*4.4]),10*k,3*k);ctx.fillStyle=ac;ctx.fillRect(X([92,0]),Y([0,65.6]),10*k,3*k)}
   const back=fg+'66';
   line([p.hp,p.k2,p.f2],back,5);line([p.n,p.e2,p.w2],back,5);
   line([p.n,p.hp],fg,6);line([p.hp,p.k,p.f],fg,5);line([p.n,p.e,p.w],fg,5);
@@ -320,7 +485,7 @@ en:{home:'Home',plan:'Plan',sport:'Sport',profile:'Profile',sample:'Sample data'
  height:'Height (cm)',goal:'Goal',best:'Best lifts',noweight:'No weighted lifts yet',data:'Data',clearsample:'Clear sample data and start fresh',
  reset:'Reset all data',confirm:'Tap again to confirm',lang:'Language',addedto:'added to',pr:'New PR!',saved:'Set saved',cleared:'Data cleared',
  days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
- groups:{All:'All',Push:'Push',Pull:'Pull',Legs:'Legs',Core:'Core',Cardio:'Cardio',Custom:'My exercises'},
+ groups:{All:'All',Push:'Push',Pull:'Pull',Legs:'Legs',Core:'Core',Cardio:'Cardio',Machine:'Machines',Custom:'My exercises'},
  setup:"Let's set you up. You can change this later in Profile.",letsgo:"Let's go",needyou:'Enter your name',redo:'Redo setup',g_muscle:'Build muscle',g_strength:'Get stronger',g_lose:'Lose weight',g_fit:'Stay fit',
  seeall:'See all',history:'Streak history',current:'current streak',beststreak:'best streak',trained:'training days',tapday:'Tap a day to see your workout',backhome:'‹ Home',noworkout:'No workout this day',
  repsu:'reps',secu:'s',trk:'Tracking',trk_kg:'Weight + reps',trk_bw:'Reps only',trk_km:'Distance (km)',trk_sec:'Time (seconds)',side:'Menu side',left:'Left',right:'Right',
@@ -334,7 +499,7 @@ fr:{home:'Accueil',plan:'Plan',sport:'Sport',profile:'Profil',sample:'Données e
  height:'Taille (cm)',goal:'Objectif',best:'Meilleures charges',noweight:'Pas encore de charges',data:'Données',clearsample:'Effacer les exemples et repartir de zéro',
  reset:'Tout effacer',confirm:'Touche encore pour confirmer',lang:'Langue',addedto:'ajouté à',pr:'Nouveau record !',saved:'Série enregistrée',cleared:'Données effacées',
  days:['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'],
- groups:{All:'Tout',Push:'Poussée',Pull:'Tirage',Legs:'Jambes',Core:'Abdos',Cardio:'Cardio',Custom:'Mes exercices'},
+ groups:{All:'Tout',Push:'Poussée',Pull:'Tirage',Legs:'Jambes',Core:'Abdos',Cardio:'Cardio',Machine:'Machines',Custom:'Mes exercices'},
  setup:'Configurons ton profil. Tu pourras le modifier plus tard dans Profil.',letsgo:"C'est parti",needyou:'Entre ton prénom',redo:'Refaire la configuration',g_muscle:'Prendre du muscle',g_strength:'Devenir plus fort',g_lose:'Perdre du poids',g_fit:'Rester en forme',
  seeall:'Tout voir',history:'Historique',current:'série actuelle',beststreak:'meilleure série',trained:"jours d'entraînement",tapday:'Touche un jour pour voir ta séance',backhome:'‹ Accueil',noworkout:'Pas de séance ce jour-là',
  repsu:'rép.',secu:'s',trk:'Suivi',trk_kg:'Poids + répétitions',trk_bw:'Répétitions seulement',trk_km:'Distance (km)',trk_sec:'Temps (secondes)',side:'Côté du menu',left:'Gauche',right:'Droite',
@@ -353,6 +518,26 @@ if(!S.custom)S.custom={};
 const regCustom=(id,c)=>{EX[id]=Object.assign({},EX[c.like]||EX.squat,{n:c.n,g:c.g,m:c.m||'kg',custom:true})};
 for(const id in S.custom)regCustom(id,S.custom[id]);
 const t=k=>TXT[S.lang][k];
+Object.assign(EXFR,{legext:'Leg extension',legcurl:'Leg curl assis',lyingcurl:'Leg curl allongé',abductor:'Machine abducteurs',adductor:'Machine adducteurs',seatedcalf:'Mollets assis',
+ hacksquat:'Hack squat',smithsquat:'Squat à la Smith',smithbench:'Développé couché Smith',smithpress:'Développé épaules Smith',calfpress:'Mollets à la presse',glutemachine:'Machine fessiers',hipthrustm:'Hip thrust machine',
+ chestpress:'Presse pectoraux',inclinepressm:'Presse pectoraux inclinée',shoulderpressm:'Presse épaules',lateralm:'Machine élévations latérales',pecdeck:'Pec deck',revpecdeck:'Pec deck inversé',
+ dipmachine:'Dips assistés',assistpull:'Tractions assistées',machinerow:'Rowing machine guidée',highrowm:'Rowing haut machine',pullovermachine:'Pull-over machine',tricepmachine:'Machine triceps',bicepmachine:'Machine biceps',
+ abmachine:'Machine abdos',torsorot:'Machine rotation du buste',backextm:'Machine lombaires',cablecross:'Écarté à la poulie',cablecurl:'Curl poulie',cablelateral:'Élévation latérale poulie',cableoh:'Extension triceps poulie haute',
+ straightpd:'Pull-over poulie bras tendus',cablecrunch:'Crunch poulie',woodchop:'Bûcheron poulie',pallof:'Pallof press',pullthrough:'Pull-through poulie',cablekick:'Kickback fessier poulie',cablefrontraise:'Élévation frontale poulie',
+ ropehammer:'Curl marteau corde',cableuprow:'Rowing menton poulie',treadmill:'Tapis de course',elliptical:'Vélo elliptique',stair:'Simulateur d\'escalier',airbike:'Air bike',skierg:'Ski erg',
+ declinebench:'Développé décliné',inclinedb:'Développé incliné haltères',inclinefly:'Écarté incliné',floorpress:'Floor press',pushpress:'Push press',landmine:'Landmine press',zpress:'Z press',
+ widepushup:'Pompes larges',inclinepushup:'Pompes inclinées',declinepushup:'Pompes déclinées',kneepushup:'Pompes sur les genoux',archer:'Pompes archer',clappushup:'Pompes claquées',hspu:'Pompes en équilibre',
+ ringdips:'Dips aux anneaux',kickback:'Kickback triceps',uprightrow:'Rowing menton',pullover:'Pull-over haltère',platefront:'Élévation frontale disque',
+ pendlay:'Rowing Pendlay',tbar:'Rowing T-bar',sealrow:'Seal row',renegade:'Rowing renegade',muscleup:'Muscle-up',widepull:'Tractions prise large',neutralpull:'Tractions prise neutre',
+ preacher:'Curl pupitre',concentration:'Curl concentré',ezcurl:'Curl barre EZ',reversecurl:'Curl inversé',zottman:'Curl Zottman',wristcurl:'Curl poignets',rackpull:'Rack pull',trapbar:'Soulevé de terre trap bar',
+ sumodead:'Soulevé de terre sumo',stiffleg:'Soulevé de terre jambes tendues',powerclean:'Épaulé',snatch:'Arraché',highpull:'Tirage haut',backext:'Extension lombaire',
+ boxsquat:'Box squat',pausesquat:'Squat pause',zercher:'Squat Zercher',ohsquat:'Squat bras tendus',thruster:'Thruster',splitsquat:'Squat fendu',reverselunge:'Fentes arrière',walkinglunge:'Fentes marchées',
+ curtsy:'Fentes croisées',laterallunge:'Fentes latérales',cossack:'Squat cosaque',stepup:'Step-up',boxjump:'Box jump',singlerdl:'Soulevé de terre unijambe',nordic:'Nordic curl',
+ singlebridge:'Pont fessier unijambe',frogpump:'Frog pump',donkeykick:'Donkey kick',firehydrant:'Fire hydrant',sissy:'Sissy squat',jumplunge:'Fentes sautées',skater:'Sauts du patineur',
+ kbsnatch:'Arraché kettlebell',wallball:'Wall ball',sledpush:'Poussée de traîneau',vup:'V-up',jackknife:'Jackknife',toetouch:'Crunch pointes de pieds',flutter:'Battements de jambes',deadbug:'Dead bug',
+ birddog:'Bird dog',plankjack:'Planche jacks',shouldertap:'Touches d\'épaules',kneeraise:'Relevé de genoux suspendu',windshield:'Essuie-glaces',dragonflag:'Dragon flag',reversecrunch:'Crunch inversé',
+ heeltouch:'Touches de talons',obliquecrunch:'Crunch oblique',declinesitup:'Redressement décliné',hollowrock:'Hollow rock',lsit:'L-sit',suitcase:'Marche valise',sidebend:'Flexion latérale haltère',
+ sprint:'Sprint',hike:'Randonnée',battleropes:'Cordes ondulatoires',bearcrawl:'Marche de l\'ours',inchworm:'Chenille',tuckjump:'Sauts genoux poitrine',shuffle:'Pas chassés',skating:'Roller'});
 const exn=id=>EX[id].custom?esc(EX[id].n):S.lang==='fr'?EXFR[id]:EX[id].n;
 const lab=l=>TXT[S.lang].labels[l]||l;
 const M=id=>(EX[id]&&EX[id].m)||'kg';
@@ -427,7 +612,7 @@ plan(){
      <div style="display:flex;justify-content:center"><span data-c="${opts[0]}" data-s="120" id="cx-prev"></span></div>
     </div><p></p>
     <div class="stack"><button class="btn" data-create>${t('createadd')}</button><button class="btn ghost" data-cancel>${t('cancel')}</button></div>`}
-  if(adding){const list=Object.entries(EX).filter(([,e])=>filter==='All'||(filter==='Custom'?e.custom:e.g===filter));
+  if(adding){const list=Object.entries(EX).filter(([,e])=>filter==='All'||(filter==='Custom'?e.custom:filter==='Machine'?e.mc:e.g===filter));
     return `<h1>${t('addex')}</h1><p class="sub">${t('tapadd')} ${DN[planDay]}</p>
     <div class="chips">${GROUPS.map(g=>`<button class="${g===filter?'on':''}" data-f="${g}">${t('groups')[g]}</button>`).join('')}</div>
     <div class="lib">${list.map(([id])=>`<button data-add="${id}"><span data-c="${id}" data-s="96"></span>${exn(id)}</button>`).join('')}</div>
