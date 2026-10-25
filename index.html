@@ -556,6 +556,10 @@ const plates=w=>{let r=(w-20)/2;if(r<=0)return '';const o=[];for(const p of [25,
 const fmt=(id,s)=>({kg:s.p?`${t('plate')} ${s.w} × ${s.r}`:`${s.w} kg × ${s.r}`,bw:`${s.r} ${t('repsu')}`,sec:`${s.r} ${t('secu')}`,km:`${s.w} km · ${s.r} min`})[M(id)];
 const tgt=it=>({kg:`${it.sets} × ${it.reps}`,bw:`${it.sets} × ${it.reps}`,sec:`${it.sets} × ${it.reps} s`,km:`${it.reps} km`})[M(it.ex)];
 const RST=it=>it.rest??90,mmss=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+// rest timer: the Android app buzzes natively so it works with the app closed
+const BZZ=[250,150,250,700,250,150,250,700,250,150,250],NAT=window.Android&&Android.restAt;
+function restGo(i){restI=i;restEnd=Date.now()+RST(S.plan[sportDay].items[i])*1000;if(NAT)Android.restAt(restEnd)}
+function restStop(){restI=null;if(NAT)Android.restCancel()}
 const newItem=ex=>({km:{ex,sets:1,reps:5},sec:{ex,sets:3,reps:60}})[M(ex)]||{ex,sets:3,reps:10};
 const stepper=(id,v,unit,step)=>`<button data-st="${id}|-${step}">−</button><span class="num" id="${id}">${v}</span><span class="last">${unit}</span><button data-st="${id}|${step}">+</button>`;
 const DAYS_=()=>t('days');
@@ -678,7 +682,7 @@ function render(){
 }
 setInterval(()=>{const c=$('#clock');if(c&&startT){const s=Math.floor((Date.now()-startT)/1000);c.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
   if(restI!==null){const left=Math.ceil((restEnd-Date.now())/1000),b=$('#rt'+restI),it=S.plan[sportDay].items[restI];
-    if(left<=0){if(b){b.classList.remove('on');b.textContent='⏱ '+mmss(RST(it||{}))}restI=null;navigator.vibrate&&navigator.vibrate([300,150,300]);toast(t('restdone'))}
+    if(left<=0){if(b){b.classList.remove('on');b.textContent='⏱ '+mmss(RST(it||{}))}restI=null;if(!NAT&&navigator.vibrate)navigator.vibrate(BZZ);toast(t('restdone'))}
     else if(b)b.textContent='⏱ '+mmss(left)}},1000);
 
 // ---------- events ----------
@@ -708,8 +712,8 @@ document.addEventListener('click',e=>{
   if(D.ss){const [i,v]=D.ss.split('|');const it=S.plan[planDay].items[i];it.sets=Math.max(1,it.sets+ +v);save();render()}
   if(D.rr){const [i,v]=D.rr.split('|');const it=S.plan[planDay].items[i];it.reps=Math.max(1,it.reps+ +v);save();render()}
   if(D.rt){const [i,v]=D.rt.split('|');const it=S.plan[planDay].items[i];it.rest=Math.max(0,Math.min(600,RST(it)+ +v));save();render()}
-  if(D.sd){sportDay=+D.sd;restI=null;render()}
-  if(D.rest){const i=+D.rest;if(restI===i){restI=null}else{restI=i;restEnd=Date.now()+RST(S.plan[sportDay].items[i])*1000}render()}
+  if(D.sd){sportDay=+D.sd;restStop();render()}
+  if(D.rest){const i=+D.rest;if(restI===i)restStop();else restGo(i);render()}
   if(D.st){const [id,v]=D.st.split('|');const el=$('#'+id);el.textContent=Math.round(Math.max(0,+el.textContent+ +v)*10)/10;
     const pl=$('#pl'+id.slice(1));if(id[0]==='w'&&pl)pl.textContent=plates(+el.textContent)}
   if(D.pin){S.pin[D.pin]=!PIN(D.pin);save();render()}
@@ -719,7 +723,7 @@ document.addEventListener('click',e=>{
     const val=s=>m==='kg'?s.w*1000+s.r:m==='km'?s.w:s.r;
     const p=PIN(it.ex)?1:0;
     const prev=Object.values(S.days).flat().filter(s=>s.ex===it.ex&&!s.p===!p);const pr=val({w,r})>0&&(m!=='kg'||w>0)&&prev.every(s=>val(s)<val({w,r}));
-    const set=p?{w,r,p}:{w,r};(S.days[today()]=S.days[today()]||[]).push({ex:it.ex,...set,pr});S.last[it.ex]=set;if(RST(it)){restI=+i;restEnd=Date.now()+RST(it)*1000}save();render();toast(pr?t('pr')+' '+fmt(it.ex,set):t('saved'))}
+    const set=p?{w,r,p}:{w,r};(S.days[today()]=S.days[today()]||[]).push({ex:it.ex,...set,pr});S.last[it.ex]=set;if(RST(it))restGo(+i);save();render();toast(pr?t('pr')+' '+fmt(it.ex,set):t('saved'))}
   if('reset' in D){if(b.dataset.armed){S={v:3,lang:S.lang,side:S.side,custom:{},profile:{name:'',bw:'',height:'',goal:''},plan:DAYS.map(()=>({label:'Rest',items:[]})),last:{},days:{}};save();render();toast(t('cleared'))}
     else{b.dataset.armed=1;b.textContent=t('confirm');b.style.background='#D93636';b.style.color='#fff'}}
 });
