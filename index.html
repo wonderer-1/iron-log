@@ -634,7 +634,7 @@ plan(){
   <div class="row" style="margin-bottom:10px"><input id="lbl" value="${esc(lab(d.label))}" style="font:600 18px var(--body);color:var(--fg);background:none;border:0;border-bottom:1px dashed var(--line);width:60%"><span class="last">${d.items.length} ${t('exercises')}</span></div>
   <div class="stack">${d.items.map((it,i)=>`<div class="card exrow"><span data-c="${it.ex}" data-s="64"></span><div class="info"><b>${exn(it.ex)}</b>
    <span>${M(it.ex)==='km'?'':`<button class="x" data-ss="${i}|-1" style="font-size:16px">−</button>${it.sets} ${t('sets')}<button class="x" data-ss="${i}|1" style="font-size:16px">+</button> × `}<button class="x" data-rr="${i}|-${M(it.ex)==='sec'?10:1}" style="font-size:16px">−</button>${it.reps}${M(it.ex)==='km'?' km':M(it.ex)==='sec'?' s':''}<button class="x" data-rr="${i}|${M(it.ex)==='sec'?10:1}" style="font-size:16px">+</button></span>
-   <span>${t('rest')} <button class="x" data-rt="${i}|-15" style="font-size:16px">−</button>${mmss(RST(it))}<button class="x" data-rt="${i}|15" style="font-size:16px">+</button></span></div>
+   <span style="margin-left:14px">${t('rest')} <button class="x" data-rt="${i}|-15" style="font-size:16px">−</button>${mmss(RST(it))}<button class="x" data-rt="${i}|15" style="font-size:16px">+</button></span></div>
    <button class="x" data-del="${i}" aria-label="Remove">×</button></div>`).join('')||`<div class="card sub" style="margin:0">${t('restplan')}</div>`}
   <button class="btn" data-adding>${t('plusadd')}</button></div>`},
 sport(){
@@ -730,7 +730,7 @@ document.addEventListener('input',e=>{const tg=e.target;
   if(tg.dataset.pf){S.profile[tg.dataset.pf]=tg.value;save()}
 });
 render();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{});
 </script>
 </body>
 </html>
