@@ -465,6 +465,7 @@ function starter(){
   return S}
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch{}
 if(!S)S=starter();
+S.pin=S.pin||{};
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch{}};
 save();
 
@@ -491,7 +492,7 @@ en:{home:'Home',plan:'Plan',sport:'Sport',profile:'Profile',sample:'Sample data'
  groups:{All:'All',Push:'Push',Pull:'Pull',Legs:'Legs',Core:'Core',Cardio:'Cardio',Machine:'Machines',Custom:'My exercises'},
  setup:"Let's set you up. You can change this later in Profile.",letsgo:"Let's go",needyou:'Enter your name',redo:'Redo setup',g_muscle:'Build muscle',g_strength:'Get stronger',g_lose:'Lose weight',g_fit:'Stay fit',
  seeall:'See all',history:'Streak history',current:'current streak',beststreak:'best streak',trained:'training days',tapday:'Tap a day to see your workout',backhome:'‹ Home',noworkout:'No workout this day',
- repsu:'reps',secu:'s',trk:'Tracking',trk_kg:'Weight + reps',trk_bw:'Reps only',trk_km:'Distance (km)',trk_sec:'Time (seconds)',side:'Menu side',left:'Left',right:'Right',
+ repsu:'reps',plate:'plate',perside:'per side',secu:'s',trk:'Tracking',trk_kg:'Weight + reps',trk_bw:'Reps only',trk_km:'Distance (km)',trk_sec:'Time (seconds)',side:'Menu side',left:'Left',right:'Right',
  newex:'New exercise',newexsub:'Make your own exercise and pick a stickman for it',exname:'Name',exph:'e.g. Cable crossover',group:'Muscle group',moveslike:'Stickman',createadd:'Create and add',cancel:'Cancel',pluscustom:'+ Create custom exercise',needname:'Give your exercise a name',
  labels:{}},
 fr:{home:'Accueil',plan:'Plan',sport:'Sport',profile:'Profil',sample:'Données exemple',streak:'Série de jours',inrow:"jours d'affilée",restok:'Les jours de repos du plan ne cassent pas la série',
@@ -505,7 +506,7 @@ fr:{home:'Accueil',plan:'Plan',sport:'Sport',profile:'Profil',sample:'Données e
  groups:{All:'Tout',Push:'Poussée',Pull:'Tirage',Legs:'Jambes',Core:'Abdos',Cardio:'Cardio',Machine:'Machines',Custom:'Mes exercices'},
  setup:'Configurons ton profil. Tu pourras le modifier plus tard dans Profil.',letsgo:"C'est parti",needyou:'Entre ton prénom',redo:'Refaire la configuration',g_muscle:'Prendre du muscle',g_strength:'Devenir plus fort',g_lose:'Perdre du poids',g_fit:'Rester en forme',
  seeall:'Tout voir',history:'Historique',current:'série actuelle',beststreak:'meilleure série',trained:"jours d'entraînement",tapday:'Touche un jour pour voir ta séance',backhome:'‹ Accueil',noworkout:'Pas de séance ce jour-là',
- repsu:'rép.',secu:'s',trk:'Suivi',trk_kg:'Poids + répétitions',trk_bw:'Répétitions seulement',trk_km:'Distance (km)',trk_sec:'Temps (secondes)',side:'Côté du menu',left:'Gauche',right:'Droite',
+ repsu:'rép.',plate:'plaque',perside:'par côté',secu:'s',trk:'Suivi',trk_kg:'Poids + répétitions',trk_bw:'Répétitions seulement',trk_km:'Distance (km)',trk_sec:'Temps (secondes)',side:'Côté du menu',left:'Gauche',right:'Droite',
  newex:'Nouvel exercice',newexsub:'Crée ton propre exercice et choisis son bonhomme',exname:'Nom',exph:'ex. Poulie vis-à-vis',group:'Groupe musculaire',moveslike:'Bonhomme',createadd:'Créer et ajouter',cancel:'Annuler',pluscustom:'+ Créer un exercice perso',needname:'Donne un nom à ton exercice',
  labels:{Push:'Poussée',Pull:'Tirage',Legs:'Jambes',Rest:'Repos',Cardio:'Cardio',Workout:'Séance'}}};
 const EXFR={squat:'Squat barre',bench:'Développé couché',dead:'Soulevé de terre',ohp:'Développé militaire',pushup:'Pompes',pullup:'Tractions',row:'Rowing barre',walk:'Marche',cycle:'Vélo',rower:'Rameur',swim:'Natation',boxing:'Shadow boxing',buttkick:'Talons-fesses',wallsit:'Chaise contre le mur',goodmorning:'Good morning',legpress:'Presse à cuisses',sumo:'Squat sumo',pistol:'Pistol squat',farmer:'Marche du fermier',arnold:'Développé Arnold',pushdown:'Extension triceps poulie',benchdip:'Dips sur banc',facepull:'Face pull',invrow:'Rowing inversé',revfly:'Oiseau',sideplank:'Gainage latéral',hollow:'Hollow hold',superman:'Superman',lyinglegraise:'Relevé de jambes allongé',bicycle:'Crunch vélo',abwheel:'Roue abdominale',diamond:'Pompes diamant',closegrip:'Développé couché prise serrée',dbrow:'Rowing haltère',hang:'Suspension',
@@ -544,7 +545,12 @@ Object.assign(EXFR,{legext:'Leg extension',legcurl:'Leg curl assis',lyingcurl:'L
 const exn=id=>EX[id].custom?esc(EX[id].n):S.lang==='fr'?EXFR[id]:EX[id].n;
 const lab=l=>TXT[S.lang].labels[l]||l;
 const M=id=>(EX[id]&&EX[id].m)||'kg';
-const fmt=(id,s)=>({kg:`${s.w} kg × ${s.r}`,bw:`${s.r} ${t('repsu')}`,sec:`${s.r} ${t('secu')}`,km:`${s.w} km · ${s.r} min`})[M(id)];
+// machines with a weight stack log the pin/plate number; barbell lifts show the plates to load per side
+const PINOK=id=>EX[id].mc&&M(id)==='kg'&&!/legpress|calfpress|hacksquat|hipthrustm|smith/.test(id);
+const PIN=id=>PINOK(id)&&S.pin[id]!==false;
+const BAR=id=>M(id)==='kg'&&/(^| )bar( |$)/.test(EX[id].prop||'');
+const plates=w=>{let r=(w-20)/2;if(r<=0)return '';const o=[];for(const p of [25,20,15,10,5,2.5,1.25])while(r>=p-1e-9){o.push(p);r-=p}return `${t('perside')}: ${o.join(' + ')}`};
+const fmt=(id,s)=>({kg:s.p?`${t('plate')} ${s.w} × ${s.r}`:`${s.w} kg × ${s.r}`,bw:`${s.r} ${t('repsu')}`,sec:`${s.r} ${t('secu')}`,km:`${s.w} km · ${s.r} min`})[M(id)];
 const tgt=it=>({kg:`${it.sets} × ${it.reps}`,bw:`${it.sets} × ${it.reps}`,sec:`${it.sets} × ${it.reps} s`,km:`${it.reps} km`})[M(it.ex)];
 const newItem=ex=>({km:{ex,sets:1,reps:5},sec:{ex,sets:3,reps:60}})[M(ex)]||{ex,sets:3,reps:10};
 const stepper=(id,v,unit,step)=>`<button data-st="${id}|-${step}">−</button><span class="num" id="${id}">${v}</span><span class="last">${unit}</span><button data-st="${id}|${step}">+</button>`;
@@ -592,7 +598,7 @@ home(){
     cells.push(`<i class="${d>now?'':n>14?'l3':n>8?'l2':n?'l1':''}${k===today()?' today':''}" title="${k}: ${n} ${t('sets')}"></i>`)}
   const thisWeek=Object.keys(S.days).filter(k=>(now-new Date(k))/864e5<7).length;
   const total=Object.keys(S.days).length;
-  const vol=Object.entries(S.days).filter(([k])=>(now-new Date(k))/864e5<7).flatMap(([,v])=>v).filter(s=>M(s.ex)==='kg').reduce((a,s)=>a+s.w*s.r,0);
+  const vol=Object.entries(S.days).filter(([k])=>(now-new Date(k))/864e5<7).flatMap(([,v])=>v).filter(s=>M(s.ex)==='kg'&&!s.p).reduce((a,s)=>a+s.w*s.r,0);
   const td=S.plan[dow()];
   return `${S.sample?`<span class="sample">${t('sample')}</span>`:''}
   <h1>${t('streak')}</h1>
@@ -636,8 +642,10 @@ sport(){
    let ctl='';
    if(m==='kg'||m==='bw')ctl+=`<label>${t('reps')} <span class="num" id="rv${i}">${cur.r}</span></label><input type="range" min="1" max="30" value="${cur.r}" id="r${i}" data-i="${i}">`;
    if(m==='km')ctl+=`<div class="kg">${stepper('m'+i,cur.r,'min',1)}</div>`;
-   const main={kg:stepper('w'+i,cur.w,'kg',2.5),km:stepper('w'+i,cur.w,'km',0.5),sec:stepper('w'+i,cur.r,t('secu'),10),bw:'<span style="flex:1"></span>'}[m];
+   const pin=PIN(it.ex),unit=PINOK(it.ex)?`<button class="last" data-pin="${it.ex}" style="text-decoration:underline;background:none;border:0;padding:0;width:auto;height:auto;color:var(--muted)">${pin?t('plate'):'kg'}</button>`:'kg';
+   const main={kg:pin?stepper('w'+i,cur.p?cur.w:1,unit,1):stepper('w'+i,cur.p?0:cur.w,unit,2.5),km:stepper('w'+i,cur.w,'km',0.5),sec:stepper('w'+i,cur.r,t('secu'),10),bw:'<span style="flex:1"></span>'}[m];
    ctl+=`<div class="kg">${main}<button class="save" data-save="${i}" aria-label="${t('save')}">✓</button></div>`;
+   if(BAR(it.ex))ctl+=`<div class="last" id="pl${i}">${plates(cur.w)}</div>`;
    return `<div class="card exrow"><span data-c="${it.ex}" data-s="72"></span><div class="info">
     <div class="row"><b>${exn(it.ex)}</b><span class="last">${m==='km'?'':`${done.length}/${it.sets} ${t('sets')}`}</span></div>
     <div class="last">${t('lasttime')}: ${last?fmt(it.ex,last):'—'}</div>
@@ -646,7 +654,7 @@ sport(){
    </div></div>`}).join('')||`<div class="card sub" style="margin:0">${t('nothing')}</div>`}</div>`},
 profile(){
   const all=Object.values(S.days).flat(),best={};
-  for(const s of all){const v=s.w*(1+s.r/30);if(s.w&&M(s.ex)==='kg'&&(!best[s.ex]||v>best[s.ex].v))best[s.ex]={...s,v}}
+  for(const s of all){const v=s.w*(1+s.r/30);if(s.w&&M(s.ex)==='kg'&&!s.p&&(!best[s.ex]||v>best[s.ex].v))best[s.ex]={...s,v}}
   const f=(k,u)=>`<div class="field"><span>${t(k)}</span><input id="pf-${k}" data-pf="${k}" value="${esc(S.profile[k])}" placeholder="${u}"></div>`;
   return `<h1>${esc(S.profile.name||t('profile'))}</h1><p class="sub">${Object.keys(S.days).length} ${t('workouts')} · ${all.length} ${t('setslogged')}</p>
   <h2>${t('lang')}</h2><div class="chips"><button class="${S.lang==='en'?'on':''}" data-lang="en">English</button><button class="${S.lang==='fr'?'on':''}" data-lang="fr">Français</button></div>
@@ -691,13 +699,16 @@ document.addEventListener('click',e=>{
   if(D.ss){const [i,v]=D.ss.split('|');const it=S.plan[planDay].items[i];it.sets=Math.max(1,it.sets+ +v);save();render()}
   if(D.rr){const [i,v]=D.rr.split('|');const it=S.plan[planDay].items[i];it.reps=Math.max(1,it.reps+ +v);save();render()}
   if(D.sd){sportDay=+D.sd;render()}
-  if(D.st){const [id,v]=D.st.split('|');const el=$('#'+id);el.textContent=Math.round(Math.max(0,+el.textContent+ +v)*10)/10}
+  if(D.st){const [id,v]=D.st.split('|');const el=$('#'+id);el.textContent=Math.round(Math.max(0,+el.textContent+ +v)*10)/10;
+    const pl=$('#pl'+id.slice(1));if(id[0]==='w'&&pl)pl.textContent=plates(+el.textContent)}
+  if(D.pin){S.pin[D.pin]=!PIN(D.pin);save();render()}
   if(D.save){const i=D.save,it=S.plan[sportDay].items[i],m=M(it.ex),num=id=>+$('#'+id).textContent;
     const w=m==='kg'||m==='km'?num('w'+i):0,r=m==='sec'?num('w'+i):m==='km'?num('m'+i):+$('#r'+i).value;
     // what counts as a record: heavier (then more reps) for kg, farther for km, more reps or seconds otherwise
     const val=s=>m==='kg'?s.w*1000+s.r:m==='km'?s.w:s.r;
-    const prev=Object.values(S.days).flat().filter(s=>s.ex===it.ex);const pr=val({w,r})>0&&(m!=='kg'||w>0)&&prev.every(s=>val(s)<val({w,r}));
-    (S.days[today()]=S.days[today()]||[]).push({ex:it.ex,w,r,pr});S.last[it.ex]={w,r};save();render();toast(pr?t('pr')+' '+fmt(it.ex,{w,r}):t('saved'))}
+    const p=PIN(it.ex)?1:0;
+    const prev=Object.values(S.days).flat().filter(s=>s.ex===it.ex&&!s.p===!p);const pr=val({w,r})>0&&(m!=='kg'||w>0)&&prev.every(s=>val(s)<val({w,r}));
+    const set=p?{w,r,p}:{w,r};(S.days[today()]=S.days[today()]||[]).push({ex:it.ex,...set,pr});S.last[it.ex]=set;save();render();toast(pr?t('pr')+' '+fmt(it.ex,set):t('saved'))}
   if('reset' in D){if(b.dataset.armed){S={v:3,lang:S.lang,side:S.side,custom:{},profile:{name:'',bw:'',height:'',goal:''},plan:DAYS.map(()=>({label:'Rest',items:[]})),last:{},days:{}};save();render();toast(t('cleared'))}
     else{b.dataset.armed=1;b.textContent=t('confirm');b.style.background='#D93636';b.style.color='#fff'}}
 });
